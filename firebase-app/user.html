@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CamiPi | Painel do Usuário</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-shell dashboard-page">
+    <header class="dashboard-header premium-topbar">
+      <div>
+        <span class="eyebrow">CamiPi</span>
+        <h1>Painel do Usuário</h1>
+        <p class="hero-text">
+          Área destinada ao perfil <strong>user</strong>, com acesso apenas ao próprio perfil salvo no banco.
+        </p>
+      </div>
 
+      <div class="header-actions">
+        <button id="btnBackToLogin" class="btn btn-ghost">Voltar ao login</button>
+        <button id="btnLogout" class="btn btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <main class="dashboard-grid premium-grid">
+      <section class="panel premium-card">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Sessão</span>
+            <h2>Informações da conta</h2>
+            <p>Dados do usuário autenticado e cargo salvo no banco.</p>
+          </div>
+        </div>
+
+        <div id="sessionInfo" class="info-grid">
+          <div class="info-card">
+            <span class="info-label">UID</span>
+            <span class="info-value">—</span>
+          </div>
+          <div class="info-card">
+            <span class="info-label">Email</span>
+            <span class="info-value">—</span>
+          </div>
+          <div class="info-card">
+            <span class="info-label">Cargo</span>
+            <span class="info-value">—</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel premium-card">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Meu perfil</span>
+            <h2>Acesso ao nó /users/{uid}</h2>
+            <p>O usuário pode visualizar e atualizar apenas o próprio perfil.</p>
+          </div>
+          <span id="userAccessPill" class="pill no">Não testado</span>
+        </div>
+
+        <div class="button-row">
+          <button id="btnReadProfile" class="btn btn-primary">Ler meu perfil</button>
+          <button id="btnUpdateProfile" class="btn btn-secondary">Atualizar último acesso</button>
+        </div>
+
+        <pre id="userDataOutput">Sem dados ainda.</pre>
+      </section>
+
+      <section class="panel premium-card full-width">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Permissões</span>
+            <h2>Resumo de acesso</h2>
+            <p>Visão clara do que esse perfil pode e não pode fazer.</p>
+          </div>
+        </div>
+
+        <div class="premium-summary-grid">
+          <div class="summary-card success-card">
+            <span class="summary-title">Permitido</span>
+            <p>Ler o próprio perfil em <code>/users/{uid}</code>.</p>
+          </div>
+
+          <div class="summary-card success-card">
+            <span class="summary-title">Permitido</span>
+            <p>Atualizar o campo <code>lastLoginAt</code> do próprio registro.</p>
+          </div>
+
+          <div class="summary-card danger-card">
+            <span class="summary-title">Restrito</span>
+            <p>Não possui acesso ao nó <code>/admin-data</code>.</p>
+          </div>
+
+          <div class="summary-card danger-card">
+            <span class="summary-title">Restrito</span>
+            <p>Não pode visualizar todos os usuários cadastrados.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel premium-card full-width">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Status</span>
+            <h2>Mensagens da aplicação</h2>
+            <p>Retorno das ações executadas nesta página.</p>
+          </div>
+        </div>
+
+        <div id="pageStatus" class="status-box">Página carregada.</div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="user.js"></script>
+</body>
+</html>
