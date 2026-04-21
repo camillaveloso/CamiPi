@@ -1,1 +1,49 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
 
+    "users": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && auth.uid === $uid && ((!data.exists() && newData.hasChildren(['email', 'role', 'createdAt', 'lastLoginAt']) && newData.child('email').isString() && (newData.child('role').val() === 'user' || newData.child('role').val() === 'admin')) || (data.exists() && newData.child('role').val() === data.child('role').val()))",
+
+        "email": {
+          ".validate": "newData.isString()"
+        },
+        "role": {
+          ".validate": "newData.isString() && (newData.val() === 'user' || newData.val() === 'admin')"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "lastLoginAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    "admin-data": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+
+      "dashboardMessage": {
+        ".validate": "newData.isString()"
+      },
+      "lastUpdatedBy": {
+        ".validate": "newData.isString()"
+      },
+      "updatedAt": {
+        ".validate": "newData.isNumber()"
+      },
+      "$other": {
+        ".validate": false
+      }
+    }
+  }
+}
