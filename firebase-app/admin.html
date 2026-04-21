@@ -1,182 +1,135 @@
-let app = null;
-let auth = null;
-let db = null;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CamiPi | Painel do Administrador</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-shell dashboard-page">
+    <header class="dashboard-header premium-topbar">
+      <div>
+        <span class="eyebrow">CamiPi</span>
+        <h1>Painel do Administrador</h1>
+        <p class="hero-text">
+          Área administrativa com acesso ao nó <code>/admin-data</code> e visualização de todos os usuários cadastrados.
+        </p>
+      </div>
 
-const $ = (id) => document.getElementById(id);
+      <div class="header-actions">
+        <button id="btnBackToLogin" class="btn btn-ghost">Voltar ao login</button>
+        <button id="btnLogout" class="btn btn-secondary">Sair</button>
+      </div>
+    </header>
 
-const sessionInfo = $("sessionInfo");
-const adminDataOutput = $("adminDataOutput");
-const usersListOutput = $("usersListOutput");
-const adminAccessPill = $("adminAccessPill");
-const usersAccessPill = $("usersAccessPill");
-const pageStatus = $("pageStatus");
+    <main class="dashboard-grid premium-grid">
+      <section class="panel premium-card">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Sessão</span>
+            <h2>Informações da conta</h2>
+            <p>Dados do administrador autenticado e cargo salvo no banco.</p>
+          </div>
+        </div>
 
-function setPillState(
-  element,
-  allowed,
-  allowedText = "Acesso permitido",
-  deniedText = "Acesso negado"
-) {
-  element.className = allowed ? "pill ok" : "pill no";
-  element.textContent = allowed ? allowedText : deniedText;
-}
+        <div id="sessionInfo" class="info-grid">
+          <div class="info-card">
+            <span class="info-label">UID</span>
+            <span class="info-value">—</span>
+          </div>
+          <div class="info-card">
+            <span class="info-label">Email</span>
+            <span class="info-value">—</span>
+          </div>
+          <div class="info-card">
+            <span class="info-label">Cargo</span>
+            <span class="info-value">—</span>
+          </div>
+        </div>
+      </section>
 
-function showSession(user, role) {
-  sessionInfo.innerHTML = `
-    <div class="info-card">
-      <span class="info-label">UID</span>
-      <span class="info-value">${user.uid}</span>
-    </div>
-    <div class="info-card">
-      <span class="info-label">Email</span>
-      <span class="info-value">${user.email}</span>
-    </div>
-    <div class="info-card">
-      <span class="info-label">Cargo</span>
-      <span class="info-value">${role}</span>
-    </div>
-  `;
-}
+      <section class="panel premium-card">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Admin data</span>
+            <h2>Gerenciar /admin-data</h2>
+            <p>Leitura e escrita restritas ao perfil administrador.</p>
+          </div>
+          <span id="adminAccessPill" class="pill no">Não testado</span>
+        </div>
 
-async function initPage() {
-  const savedConfig = localStorage.getItem("firebaseConfig");
+        <div class="button-row">
+          <button id="btnReadAdmin" class="btn btn-primary">Ler admin-data</button>
+          <button id="btnWriteAdmin" class="btn btn-secondary">Escrever admin-data</button>
+        </div>
 
-  if (!savedConfig) {
-    alert("Configuração do Firebase não encontrada. Volte para a página inicial.");
-    window.location.href = "index.html";
-    return;
-  }
+        <pre id="adminDataOutput">Sem dados ainda.</pre>
+      </section>
 
-  const parsedConfig = JSON.parse(savedConfig);
+      <section class="panel premium-card full-width">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Usuários</span>
+            <h2>Usuários cadastrados</h2>
+            <p>Função exclusiva do administrador para leitura do nó <code>/users</code>.</p>
+          </div>
+          <span id="usersAccessPill" class="pill no">Não testado</span>
+        </div>
 
-  const [
-    { initializeApp, getApps, getApp },
-    { getAuth, onAuthStateChanged, signOut },
-    { getDatabase, ref, get, update }
-  ] = await Promise.all([
-    import("https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"),
-    import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"),
-    import("https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js")
-  ]);
+        <div class="button-row">
+          <button id="btnListUsers" class="btn btn-primary">Listar usuários</button>
+        </div>
 
-  app = getApps().length ? getApp() : initializeApp(parsedConfig);
-  auth = getAuth(app);
-  db = getDatabase(app);
+        <pre id="usersListOutput">Sem dados ainda.</pre>
+      </section>
 
-  window._pageFns = { signOut, ref, get, update };
+      <section class="panel premium-card full-width">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Permissões</span>
+            <h2>Resumo de acesso</h2>
+            <p>Visualização rápida do que o perfil admin pode fazer.</p>
+          </div>
+        </div>
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      alert("Você precisa estar logado.");
-      window.location.href = "index.html";
-      return;
-    }
+        <div class="premium-summary-grid">
+          <div class="summary-card success-card">
+            <span class="summary-title">Permitido</span>
+            <p>Ler e escrever em <code>/admin-data</code>.</p>
+          </div>
 
-    try {
-      const snap = await get(ref(db, `users/${user.uid}`));
+          <div class="summary-card success-card">
+            <span class="summary-title">Permitido</span>
+            <p>Visualizar todos os usuários cadastrados em <code>/users</code>.</p>
+          </div>
 
-      if (!snap.exists()) {
-        alert("Perfil do usuário não encontrado.");
-        window.location.href = "index.html";
-        return;
-      }
+          <div class="summary-card success-card">
+            <span class="summary-title">Permitido</span>
+            <p>Ler o próprio perfil e navegar pelo painel administrativo.</p>
+          </div>
 
-      const role = snap.val().role;
+          <div class="summary-card neutral-card">
+            <span class="summary-title">Observação</span>
+            <p>As permissões são controladas no Firebase por meio das Security Rules.</p>
+          </div>
+        </div>
+      </section>
 
-      if (role !== "admin") {
-        window.location.href = role === "user" ? "user.html" : "index.html";
-        return;
-      }
+      <section class="panel premium-card full-width">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Status</span>
+            <h2>Mensagens da aplicação</h2>
+            <p>Retorno das ações executadas nesta página.</p>
+          </div>
+        </div>
 
-      showSession(user, role);
-      pageStatus.textContent = "Administrador autenticado com sucesso.";
-    } catch (error) {
-      pageStatus.textContent = `Erro ao carregar sessão: ${error.message}`;
-    }
-  });
-}
+        <div id="pageStatus" class="status-box">Página carregada.</div>
+      </section>
+    </main>
+  </div>
 
-$("btnReadAdmin").addEventListener("click", async () => {
-  if (!auth?.currentUser) {
-    alert("Faça login primeiro.");
-    return;
-  }
-
-  try {
-    const { ref, get } = window._pageFns;
-    const snap = await get(ref(db, "admin-data"));
-
-    adminDataOutput.textContent = JSON.stringify(snap.val(), null, 2);
-    setPillState(adminAccessPill, true);
-    pageStatus.textContent = "admin-data carregado com sucesso.";
-  } catch (error) {
-    adminDataOutput.textContent = error.message;
-    setPillState(adminAccessPill, false);
-    pageStatus.textContent = `Erro ao ler admin-data: ${error.message}`;
-  }
-});
-
-$("btnWriteAdmin").addEventListener("click", async () => {
-  if (!auth?.currentUser) {
-    alert("Faça login primeiro.");
-    return;
-  }
-
-  try {
-    const { ref, update } = window._pageFns;
-
-    await update(ref(db, "admin-data"), {
-      dashboardMessage: "Atualizado pela interface do administrador.",
-      lastUpdatedBy: auth.currentUser.uid,
-      updatedAt: Date.now()
-    });
-
-    adminDataOutput.textContent = JSON.stringify(
-      { ok: true, message: "admin-data atualizado" },
-      null,
-      2
-    );
-
-    setPillState(adminAccessPill, true);
-    pageStatus.textContent = "admin-data atualizado com sucesso.";
-  } catch (error) {
-    adminDataOutput.textContent = error.message;
-    setPillState(adminAccessPill, false);
-    pageStatus.textContent = `Erro ao escrever em admin-data: ${error.message}`;
-  }
-});
-
-$("btnListUsers").addEventListener("click", async () => {
-  if (!auth?.currentUser) {
-    alert("Faça login primeiro.");
-    return;
-  }
-
-  try {
-    const { ref, get } = window._pageFns;
-    const snap = await get(ref(db, "users"));
-
-    usersListOutput.textContent = JSON.stringify(snap.val(), null, 2);
-    setPillState(usersAccessPill, true);
-    pageStatus.textContent = "Lista de usuários carregada com sucesso.";
-  } catch (error) {
-    usersListOutput.textContent = error.message;
-    setPillState(usersAccessPill, false);
-    pageStatus.textContent = `Erro ao listar usuários: ${error.message}`;
-  }
-});
-
-$("btnLogout").addEventListener("click", async () => {
-  try {
-    await window._pageFns.signOut(auth);
-    window.location.href = "index.html";
-  } catch (error) {
-    pageStatus.textContent = `Erro no logout: ${error.message}`;
-  }
-});
-
-$("btnBackToLogin").addEventListener("click", () => {
-  window.location.href = "index.html";
-});
-
-window.addEventListener("DOMContentLoaded", initPage);
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
