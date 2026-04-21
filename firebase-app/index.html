@@ -1,1 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CamiPi | Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-shell auth-page">
+    <div class="auth-wrapper premium-auth">
+      <section class="brand-panel">
+        <div class="brand-top">
+          <span class="eyebrow">CamiPi</span>
+          <div class="brand-badge">Controle de acesso por cargo</div>
+        </div>
 
+        <div class="brand-main">
+          <h1>CamiPi</h1>
+          <p class="brand-subtitle">
+            Plataforma de demonstração com autenticação, modelagem em árvore JSON e permissões separadas entre
+            <strong>user</strong> e <strong>admin</strong> com Firebase Realtime Database.
+          </p>
+        </div>
+
+        <div class="brand-cards">
+          <div class="mini-feature-card">
+            <span class="mini-feature-title">Autenticação</span>
+            <p>Cadastro e login com Firebase Auth usando e-mail e senha.</p>
+          </div>
+
+          <div class="mini-feature-card">
+            <span class="mini-feature-title">Segurança</span>
+            <p>Acesso controlado com Firebase Security Rules por tipo de cargo.</p>
+          </div>
+
+          <div class="mini-feature-card">
+            <span class="mini-feature-title">Modelagem</span>
+            <p>Estrutura JSON com nós principais <code>/users</code> e <code>/admin-data</code>.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel auth-main-card premium-card">
+        <div class="panel-header premium-header">
+          <div>
+            <span class="section-kicker">Acesso</span>
+            <h2>Entrar na aplicação</h2>
+            <p>Inicialize o Firebase e faça login para ser redirecionada ao painel correspondente ao cargo.</p>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Firebase config (JSON)</span>
+          <textarea
+            id="firebaseConfig"
+            rows="8"
+            placeholder='{
+  "apiKey": "...",
+  "authDomain": "...",
+  "databaseURL": "...",
+  "projectId": "...",
+  "storageBucket": "...",
+  "messagingSenderId": "...",
+  "appId": "..."
+}'
+          ></textarea>
+        </label>
+
+        <div class="button-row">
+          <button id="btnLoadExample" class="btn btn-secondary">Carregar exemplo</button>
+          <button id="btnInit" class="btn btn-primary">Inicializar Firebase</button>
+        </div>
+
+        <div id="configStatus" class="status-box">Firebase ainda não inicializado.</div>
+
+        <div class="section-divider"></div>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>Email</span>
+            <input id="email" type="email" placeholder="email@exemplo.com" />
+          </label>
+
+          <label class="field">
+            <span>Senha</span>
+            <input id="password" type="password" placeholder="mínimo 6 caracteres" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Cargo no cadastro</span>
+          <select id="roleSelect">
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+          </select>
+        </label>
+
+        <div class="button-row">
+          <button id="btnRegister" class="btn btn-primary">Criar conta</button>
+          <button id="btnLogin" class="btn btn-secondary">Entrar</button>
+        </div>
+
+        <div id="authStatus" class="status-box">Nenhum usuário autenticado.</div>
+
+        <div class="helper-box">
+          <strong>Observação acadêmica:</strong> nesta demonstração, o cargo pode ser escolhido no cadastro apenas
+          para fins didáticos.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
